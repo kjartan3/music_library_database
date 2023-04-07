@@ -12,48 +12,91 @@ class Application < Sinatra::Base
     register Sinatra::Reloader
   end
 
-  get '/albums' do
+  # get '/' do
+  #   return erb(:index)
+  # end
+
+  # get '/about' do
+  #   return erb(:about)
+  # end
+
+  # get '/' do
+  #   @password = params[:password]
+
+  #   # @cohort_name = 'March 2023'
+
+  #   return erb(:index)
+  # end
+
+  # get "/albums" do
+  #   repo = AlbumRepository.new
+  #   @albums = repo.all
+  #   return erb(:albums)
+  # end
+
+  get '/albums/:id' do
     repo = AlbumRepository.new
-    albums = repo.all
+    artist_repo = ArtistRepository.new
 
-    response = albums.map do |album|
-      album.title
-    end.join(', ')
+    @album = repo.find(params[:id])
+    @artist = artist_repo.find(@album.artist_id)
 
-    return response
+    return erb(:album)
   end
 
-  post '/albums' do
+  get '/albums' do
     repo = AlbumRepository.new
-    new_album = Album.new
-    new_album.title = params[:title]
-    new_album.release_year = params[:release_year]
-    new_album.artist_id = params[:artist_id]
+    @albums = repo.all
 
-    repo.create(new_album)
+    return erb(:albums)
+  end
 
-    return ''
+  get '/artists/:id' do
+    artist_repo = ArtistRepository.new
+
+    @artist = artist_repo.find(params[:id])
+
+    return erb(:artist)
   end
 
   get '/artists' do
     repo = ArtistRepository.new
-    artists = repo.all
+    @artists = repo.all
 
-    response = artists.map do |artist|
-      artist.name
-    end.join(', ')
-
-    return response
+    return erb(:artists)
   end
 
-  post '/artists' do
-    repo = ArtistRepository.new
-    new_artist = Artist.new
-    new_artist.name = params[:name]
-    new_artist.genre = params[:genre]
+  # post '/albums' do
+  #   repo = AlbumRepository.new
+  #   new_album = Album.new
+  #   new_album.title = params[:title]
+  #   new_album.release_year = params[:release_year]
+  #   new_album.artist_id = params[:artist_id]
 
-    repo.create(new_artist)
+  #   repo.create(new_album)
 
-    return ''
-  end
+  #   return ''
+  # end
+
+  # get '/artists' do
+  #   repo = ArtistRepository.new
+  #   artists = repo.all
+
+  #   response = artists.map do |artist|
+  #     artist.name
+  #   end.join(', ')
+
+  #   return response
+  # end
+
+  # post '/artists' do
+  #   repo = ArtistRepository.new
+  #   new_artist = Artist.new
+  #   new_artist.name = params[:name]
+  #   new_artist.genre = params[:genre]
+
+  #   repo.create(new_artist)
+
+  #   return ''
+  # end
 end
