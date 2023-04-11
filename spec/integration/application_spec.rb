@@ -46,21 +46,55 @@ describe Application do
     end
   end
 
-  context 'GET /albums' do
-    it 'should return the list of albums' do
-      response = get('/albums')
+  # context 'GET /albums' do
+  #   it 'should return the list of albums' do
+  #     response = get('/albums')
 
-      # <br />
+  #     # <br />
 
-      # <a href="albums/2">Surfer Rosa</a>
-      # <a href="albums/3">Waterloo</a>
-      # <a href="albums/4">Super Trouper</a>
+  #     # <a href="albums/2">Surfer Rosa</a>
+  #     # <a href="albums/3">Waterloo</a>
+  #     # <a href="albums/4">Super Trouper</a>
+
+  #     expect(response.status).to eq(200)
+  #     expect(response.body).to include('<a href="/albums/2">Surfer Rosa</a><br />')
+  #     expect(response.body).to include('<a href="/albums/3">Waterloo</a><br />')
+  #     expect(response.body).to include('<a href="/albums/4">Super Trouper</a><br />')
+  #     expect(response.body).to include('<a href="/albums/5">Bossanova</a><br />')
+  #   end
+  # end
+
+  context 'GET /albums/new' do
+    it 'should return the form to add a new album' do
+      response = get('/albums/new')
 
       expect(response.status).to eq(200)
-      expect(response.body).to include('<a href="/albums/2">Surfer Rosa</a><br />')
-      expect(response.body).to include('<a href="/albums/3">Waterloo</a><br />')
-      expect(response.body).to include('<a href="/albums/4">Super Trouper</a><br />')
-      expect(response.body).to include('<a href="/albums/5">Bossanova</a><br />')
+      expect(response.body).to include('<form method="POST" action="/albums">')
+      expect(response.body).to include('<input type="text" name="title" />')
+      expect(response.body).to include('<input type="text" name="release_year" />')
+      expect(response.body).to include('<input type="text" name="artist_id" />')
+    end
+  end
+
+  context 'POST /albums' do
+    it 'should validate album parameters' do
+      response = post(
+        '/albums',
+        invalid_artist_title: 'OK Computer',
+        another_invalid_thing: 123
+      )
+
+      expect(response.status).to eq(400)
+    end
+
+    it 'should return a new album' do
+      response = post('/albums', title: 'OK Computer', release_year: '1997',  artist_id: '1')
+
+      expect(response.status).to eq(200)
+      expect(response.body).to eq('')
+
+      response = post('/albums')
+
     end
   end
 
@@ -72,6 +106,17 @@ describe Application do
       expect(response.body).to include("<h1>ABBA</h1>")
       expect(response.body).to include("ID: 2")
       expect(response.body).to include("Genre: Pop")
+    end
+  end
+
+  context 'GET /artists/new' do
+    it 'should return the form to add a new artist' do
+      response = get('/artists/new')
+
+      expect(response.status).to eq(200)
+      expect(response.body).to include('<form method="POST" action="/artists">')
+      expect(response.body).to include('<input type="text" name="name" />')
+      expect(response.body).to include('<input type="text" name="genre" />')
     end
   end
 
@@ -88,19 +133,6 @@ describe Application do
     end
   end
 
-  # context 'POST /albums' do
-  #   it 'should return a new album' do
-  #     response = post('/albums', title: 'OK Computer', release_year: '1997',  artist_id: '1')
-
-  #     expect(response.status).to eq(200)
-  #     expect(response.body).to eq('')
-
-  #     response = get('/albums')
-
-  #     expect(response.body).to include('OK Computer')
-  #   end
-  # end
-
   # context 'GET /artists' do
   #   it 'should return the list of artists' do
   #     response = get('/artists')
@@ -112,15 +144,15 @@ describe Application do
   #   end
   # end
 
-  # context 'POST /artists' do
-  #   it 'should return a new artist' do
-  #     response = post('/artists', name: 'Wild nothing', genre: 'Indie')
+  context 'POST /artists' do
+    it 'should return a new artist' do
+      response = post('/artists', name: 'Wild nothing', genre: 'Indie')
 
-  #     expect(response.status).to eq(200)
-  #     expect(response.body).to eq('')
+      expect(response.status).to eq(200)
+      expect(response.body).to eq('')
 
-  #     response = get('/artists')
-  #   end
-  # end
+      response = get('/artists')
+    end
+  end
 
 end
